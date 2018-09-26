@@ -7,7 +7,26 @@ Page({
    */
   data: {
     userInfo: null,
-    userAuthType: appInstance.globalData.userAuthType
+    userAuthType: appInstance.globalData.userAuthType,
+    trolleyList: [{
+      id: 1,
+      name: '商品1',
+      image: 'https://productlist-1257663775.cos.ap-shanghai.myqcloud.com/product1.jpg',
+      price: 45,
+      source: '海外·瑞典',
+      count: 1,
+    }, {
+      id: 2,
+      name: '商品2',
+      image: 'https://productlist-1257663775.cos.ap-shanghai.myqcloud.com/product2.jpg',
+      price: 158,
+      source: '海外·新西兰',
+      count: 3,
+    }], // 购物车商品列表
+    trolleyCheckMap: [undefined, true, true], // 购物车中选中的id哈希表
+    trolleyAccount: 70, // 购物车结算总价
+    isTrolleyEdit: false, // 购物车是否处于编辑状态
+    isTrolleyTotalCheck: false, // 购物车中商品是否全选 
   },
 
   /**

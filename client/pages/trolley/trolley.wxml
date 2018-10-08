@@ -14,7 +14,7 @@
 <view wx:elif="{{trolleyList.length > 0}}">
   <view class='trolley-top'>
     <view class='trolley-total'>
-      <view class="trolley-check-wrapper white {{isTrolleyTotalCheck ? 'check' : ''}}">
+      <view class="trolley-check-wrapper white {{isTrolleyTotalCheck ? 'check' : ''}}" bindtap="onCheckAllItems">
         <image class='trolley-check' src='/images/check.png' wx:if='{{isTrolleyTotalCheck}}'></image>
       </view>
       <view class='trolley-total-text'>全选</view>
@@ -23,7 +23,7 @@
   </view>
   <scroll-view class='product-list' scroll-y scroll-with-animation enable-back-to-top>
     <view class='product-card' wx:for='{{trolleyList}}' wx:for-item='item' wx:key='id'>
-      <view class="trolley-check-wrapper  {{trolleyCheckMap[item.id] ? 'check' : ''}}">
+      <view class="trolley-check-wrapper  {{trolleyCheckMap[item.id] ? 'check' : ''}}" bindtap="onCheckSingleItem" data-id="{{ item.id }}">
         <image class="trolley-check" src='/images/check.png' wx:if="{{trolleyCheckMap[item.id]}}"></image>
       </view>
       <image class="product-img" src="{{item.image}}"></image>
@@ -41,7 +41,7 @@
   </scroll-view>
   <view class='trolley-account'>
     <view class='trolley-total'>
-      <view class="trolley-check-wrapper {{isTrolleyTotalCheck ? 'check' : ''}}">
+      <view class="trolley-check-wrapper {{isTrolleyTotalCheck ? 'check' : ''}}" bindtap="onCheckAllItems">
         <image class='trolley-check' src='/images/check.png' wx:if='{{isTrolleyTotalCheck}}'></image>
       </view>
       <view class="trolley-total-text">全选</view>

@@ -35,7 +35,6 @@ Page({
         if (trolleyList.length > 0) {
           this.setData({
             trolleyList: trolleyList
-            
           });
         }
       },
@@ -58,6 +57,44 @@ Page({
           userAuthType: appInstance.globalData.userAuthType
         })
       }
+    });
+  },
+
+  onCheckSingleItem: function(event) {
+    let currentId = event.currentTarget.dataset.id;
+    let trolleyList = this.data.trolleyList;
+    let trolleyCheckMap = this.data.trolleyCheckMap;
+    let totalProductsInTrolley = trolleyList.length;
+    let totalCheckedProducts = 0;
+    let isTrolleyTotalCheck = this.data.isTrolleyTotalCheck;
+    
+    trolleyCheckMap[currentId] = !trolleyCheckMap[currentId];
+    trolleyCheckMap.forEach((item) => {
+      totalCheckedProducts = (item === true) ? totalCheckedProducts + 1 : totalCheckedProducts;
+    });
+
+    isTrolleyTotalCheck = (totalCheckedProducts === totalProductsInTrolley) ? true : false;
+
+    this.setData({
+      trolleyCheckMap: trolleyCheckMap,
+      isTrolleyTotalCheck: isTrolleyTotalCheck
+    })
+  },
+
+  onCheckAllItems: function (event) {
+    let isTrolleyTotalCheck = this.data.isTrolleyTotalCheck;
+    let trolleyCheckMap = this.data.trolleyCheckMap;
+    let trolleyList = this.data.trolleyList;
+
+    isTrolleyTotalCheck = !isTrolleyTotalCheck;
+
+    trolleyList.forEach((product) => {
+      trolleyCheckMap[product.id] = isTrolleyTotalCheck;
+    });
+
+    this.setData({
+      isTrolleyTotalCheck: isTrolleyTotalCheck,
+      trolleyCheckMap: trolleyCheckMap
     });
   },
 

@@ -38,7 +38,7 @@ Page({
 
   addToTrolley: function(event) {
     let productId = event.currentTarget.dataset.id;
-    if (producId) {
+    if (productId) {
       qcloud.request({
         url: config.service.addTrolley,
         login: true, 

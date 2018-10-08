@@ -38,6 +38,7 @@ router.get('/product/:id', controllers.product.detail)
 router.post('/order', validationMiddleware, controllers.order.add);
 router.get('/order', validationMiddleware, controllers.order.list);
 
-router.post('/trolley', validationMiddleware, controllers.trolley.add);
+router.put('/trolley', validationMiddleware, controllers.trolley.add);
+router.get('/trolley', validationMiddleware, controllers.trolley.list);
 
 module.exports = router

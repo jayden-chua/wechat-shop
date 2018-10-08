@@ -1,3 +1,5 @@
+const qcloud = require('../../vendor/wafer2-client-sdk/index');
+const config = require('../../config');
 const appInstance = getApp();
 
 Page({
@@ -8,23 +10,9 @@ Page({
   data: {
     userInfo: null,
     userAuthType: appInstance.globalData.userAuthType,
-    trolleyList: [{
-      id: 1,
-      name: '商品1',
-      image: 'https://productlist-1257663775.cos.ap-shanghai.myqcloud.com/product1.jpg',
-      price: 45,
-      source: '海外·瑞典',
-      count: 1,
-    }, {
-      id: 2,
-      name: '商品2',
-      image: 'https://productlist-1257663775.cos.ap-shanghai.myqcloud.com/product2.jpg',
-      price: 158,
-      source: '海外·新西兰',
-      count: 3,
-    }], // 购物车商品列表
-    trolleyCheckMap: [undefined, true, true], // 购物车中选中的id哈希表
-    trolleyAccount: 70, // 购物车结算总价
+    trolleyList: [], // 购物车商品列表
+    trolleyCheckMap: [], // 购物车中选中的id哈希表
+    trolleyAccount: 0, // 购物车结算总价
     isTrolleyEdit: false, // 购物车是否处于编辑状态
     isTrolleyTotalCheck: false, // 购物车中商品是否全选 
   },
@@ -33,7 +21,28 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    
+  },
 
+  getTrolleyList: function () {
+    qcloud.request({
+      url: config.service.listTrolley,
+      method: 'GET',
+      login: true,
+      success: (res) => {
+        let trolleyList = res.data.data;
+        console.log(trolleyList);
+        if (trolleyList.length > 0) {
+          this.setData({
+            trolleyList: trolleyList
+            
+          });
+        }
+      },
+      fail: () => {
+        console.log('failed');
+      }
+    });
   },
 
   onTapLogin: function () {
@@ -73,7 +82,8 @@ Page({
       success: ({ userInfo }) => {
         this.setData({
           userInfo
-        })
+        });
+        this.getTrolleyList();
       },
       complete: () => {
         wx.hideLoading();
@@ -92,7 +102,7 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-
+    
   },
 
   /**

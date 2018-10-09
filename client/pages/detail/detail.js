@@ -53,17 +53,16 @@ Page({
     let product = Object.assign({
       count: 1
     }, this.data.product)
-    console.log(product);
     
     qcloud.request({
       url: config.service.addOrder,
       login: true,
       method: 'POST',
       data: {
-        list: [product]
+        list: [product],
+        isInstantBuy: true
       },
       success: (res) => {
-        console.log(res);
         wx.showToast({
           title: 'buy success', //提示的内容,
         });

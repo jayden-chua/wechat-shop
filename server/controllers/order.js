@@ -3,25 +3,36 @@ const DB = require('../utils/db');
 module.exports = {
     add: async ctx => {
         let user = ctx.state.$wxInfo.userinfo.openId;
-
         let productList = ctx.request.body.list || [];
+        let isInstantBuy = !!ctx.request.body.isInstantBuy;
 
         let order = await DB.query('INSERT INTO order_user(user) VALUES (?)', [user]);
 
         let orderId = order.insertId;
 
-        let sql = 'INSERT INTO order_product(order_id, product_id, count) VALUES ';
+        let insertSql = 'INSERT INTO order_product(order_id, product_id, count) VALUES ';
         let param = [];
         let query = [];
+        let removeIdQueue = [];
+        let removeQueryQueue = [];
 
         productList.forEach(product => {
             query.push('(?, ?, ?)');
             param.push(orderId);
             param.push(product.id);
             param.push(product.count || 1);
+
+            if (!isInstantBuy) {
+                removeIdQueue.push(product.id);
+                removeQueryQueue.push('?');
+            }
         });
 
-        await DB.query(sql + query.join(', '), param);
+        if (!isInstantBuy) {
+            await DB.query('DELETE FROM trolley_user WHERE trolley_user.id IN (' + removeQueryQueue.join(', ') + ') AND trolley_user.user = ?', [...removeIdQueue, user])
+        }
+
+        await DB.query(insertSql + query.join(', '), param);
     },
     list: async ctx => {
         let user = ctx.state.$wxInfo.userinfo.openId;

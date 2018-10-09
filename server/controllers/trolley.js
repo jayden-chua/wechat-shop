@@ -20,5 +20,26 @@ module.exports = {
         let user = ctx.state.$wxInfo.userinfo.openId;
         let list = await DB.query('SELECT * FROM trolley_user LEFT JOIN product ON product.id = trolley_user.id WHERE trolley_user.user = ?', [user]);
         ctx.state.data = list;
+    },
+    update: async ctx => {
+        let user = ctx.state.$wxInfo.userinfo.openId;
+        let productList = ctx.request.body.list || [];
+
+        await DB.query('DELETE FROM trolley_user WHERE trolley_user.user = ?;', [user]);
+
+        let sql = 'INSERT INTO trolley_user (id, count, user) VALUES ';
+        let query = [];
+        let param = [];
+
+        productList.forEach((product) => {
+            query.push('(?, ?, ?)');
+
+            param.push(product.id);
+            param.push(product.count || 1);
+            param.push(user);
+        });
+
+        let result = await DB.query(sql + query.join(', ') + ' ;', param);
+        ctx.state.data = result;
     }
 };

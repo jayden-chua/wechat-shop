@@ -31,7 +31,6 @@ Page({
       login: true,
       success: (res) => {
         let trolleyList = res.data.data;
-        console.log(trolleyList);
         if (trolleyList.length > 0) {
           this.setData({
             trolleyList: trolleyList
@@ -63,9 +62,13 @@ Page({
   onTapEdit: function() {
     let isTrolleyEdit = this.data.isTrolleyEdit;
     
-    this.setData({
-      isTrolleyEdit: !isTrolleyEdit
-    });
+    if (isTrolleyEdit) {
+      this.updateTrolley();
+    } else {
+      this.setData({
+        isTrolleyEdit: !isTrolleyEdit
+      });
+    }
   },
 
   adjustTrolleyProductCount: function(event) {
@@ -74,14 +77,14 @@ Page({
     let dataset = event.currentTarget.dataset;
     let adjustType = dataset.type;
     let productId = dataset.id;
-    let trolleyAccount = this.data.trolleyAccount;
     let product;
     let index;
 
-    product = trolleyList.find((item, key) => {
-      if (item.id === productId)
+    trolleyList.forEach((item, key) => {
+      if (item.id === productId) {
         index = key;
-        return item;
+        product = item;
+      }
     });
 
     if (product) {
@@ -97,7 +100,11 @@ Page({
       }
     }
 
-    trolleyAccount = this.
+    let trolleyAccount = this.calculateTotalPrice(trolleyCheckMap, trolleyList);
+    if (!trolleyList.length) {
+      // 当购物车为空，自动同步至服务器
+      this.updateTrolley()
+    }
 
     this.setData({
       trolleyList: trolleyList,
@@ -185,6 +192,93 @@ Page({
         wx.hideLoading();
       }
     })
+  },
+
+  updateTrolley: function () {
+    wx.showLoading({
+      title: '更新购物车数据...'
+    });
+
+    let trolleyList = this.data.trolleyList;
+
+    qcloud.request({
+      url: config.service.updateTrolley,
+      method: 'POST',
+      login: true,
+      data: {
+        list: trolleyList
+      },
+      success: (res) => {
+        wx.hideLoading();
+        let data = res.data;
+
+        if (!data.code) {
+          this.setData({
+            isTrolleyEdit: false
+          });
+        } else {
+          wx.showToast({
+            icon: 'none',
+            title: '更新购物车失败1'
+          });
+        }
+      },
+      fail: (res) => {
+        wx.hideLoading();
+        wx.showToast({
+          icon: 'none',
+          title: '更新购物车失败2'
+        });
+        console.log(res);
+      }
+    })
+  },
+
+  checkout: function () {
+    if (!this.data.trolleyAccount) return;
+
+    wx.showLoading({
+      title: '结算中...',
+    })
+
+    let trolleyList = this.data.trolleyList;
+    let trolleyCheckMap = this.data.trolleyCheckMap;
+
+    let checkoutList = trolleyList.filter((product) => {
+      return !!trolleyCheckMap[product.id];
+    })
+    
+    qcloud.request({
+      url: config.service.addOrder,
+      login: true,
+      method: 'POST',
+      data: {
+        list: checkoutList
+      },
+      success: (res) => {
+        wx.hideLoading();
+        let data = res.data;
+        if (!data.code) {
+          wx.showToast({
+            title: '结算成功',
+          });
+          this.getTrolleyList();
+          wx.navigateTo({ url: '../order/order' });
+        } else {
+          wx.showToas({
+            icon: 'none',
+            title: '结算失败'
+          });
+        }
+      },
+      fail: (res) => {
+        wx.hideLoading();
+        wx.showToast({
+          icon: 'none',
+          title: '结算失败'
+        });
+      }
+    });
   },
 
   /**

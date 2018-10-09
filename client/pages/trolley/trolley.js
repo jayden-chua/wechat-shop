@@ -60,6 +60,52 @@ Page({
     });
   },
 
+  onTapEdit: function() {
+    let isTrolleyEdit = this.data.isTrolleyEdit;
+    
+    this.setData({
+      isTrolleyEdit: !isTrolleyEdit
+    });
+  },
+
+  adjustTrolleyProductCount: function(event) {
+    let trolleyList = this.data.trolleyList;
+    let trolleyCheckMap = this.data.trolleyCheckMap;
+    let dataset = event.currentTarget.dataset;
+    let adjustType = dataset.type;
+    let productId = dataset.id;
+    let trolleyAccount = this.data.trolleyAccount;
+    let product;
+    let index;
+
+    product = trolleyList.find((item, key) => {
+      if (item.id === productId)
+        index = key;
+        return item;
+    });
+
+    if (product) {
+      if (adjustType === 'add') {
+        product.count++;
+      } else {
+        if (product.count <= 1) {
+          delete trolleyCheckMap[productId];
+          trolleyList.splice(index, 1);
+        } else {
+          product.count--;
+        }
+      }
+    }
+
+    trolleyAccount = this.
+
+    this.setData({
+      trolleyList: trolleyList,
+      trolleyCheckMap: trolleyCheckMap,
+      trolleyAccount: trolleyAccount
+    });
+  },
+
   onCheckSingleItem: function(event) {
     let currentId = event.currentTarget.dataset.id;
     let trolleyList = this.data.trolleyList;

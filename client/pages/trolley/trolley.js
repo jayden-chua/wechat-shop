@@ -77,8 +77,9 @@ Page({
 
     this.setData({
       trolleyCheckMap: trolleyCheckMap,
-      isTrolleyTotalCheck: isTrolleyTotalCheck
-    })
+      isTrolleyTotalCheck: isTrolleyTotalCheck,
+      trolleyAccount: this.calculateTotalPrice(trolleyCheckMap, trolleyList)
+    });
   },
 
   onCheckAllItems: function (event) {
@@ -94,8 +95,20 @@ Page({
 
     this.setData({
       isTrolleyTotalCheck: isTrolleyTotalCheck,
-      trolleyCheckMap: trolleyCheckMap
+      trolleyCheckMap: trolleyCheckMap,
+      trolleyAccount: this.calculateTotalPrice(trolleyCheckMap, trolleyList)
     });
+  },
+
+  calculateTotalPrice: function (trolleyCheckMap, trolleyList) {
+    let trolleyAccount = 0;
+    trolleyList.forEach((product) => {
+      if (trolleyCheckMap[product.id] == true) {
+        trolleyAccount = trolleyAccount + (product.count * product.price);
+      }
+    });
+
+    return trolleyAccount;    
   },
 
   /**

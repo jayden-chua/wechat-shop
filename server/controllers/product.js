@@ -5,12 +5,18 @@ module.exports = {
         ctx.state.data = await DB.query('SELECT * FROM product;');
     },
     detail: async (ctx) => {
-        productID = +ctx.params.id;
-        if (!isNaN(productID)) {
-            ctx.state.data = (await DB.query("SELECT * FROM product WHERE product.id =?", [productID]))[0];
+        let productId = +ctx.params.id;
+        let product;
+
+        if ( !isNaN(productId) ) {
+            product = (await DB.query("SELECT * FROM product WHERE product.id =?", [productId]))[0];
         } else {
-            ctx.state.data = {};
+            product = {};
         }
+
+        product.commentCount = (await DB.query("SELECT COUNT(id) AS comment_count FROM comment WHERE comment.product_id = ? ;", [productId]))[0].comment_count || 0;
+        product.firstComment = (await DB.query("SELECT * FROM comment WHERE comment.product_id = ? LIMIT 1 OFFSET 0", [productId]))[0] || null;
         
+        ctx.state.data = product;
     }
 }

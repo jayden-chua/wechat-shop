@@ -1,19 +1,11 @@
-// client/pages/detail/detail.js.js
 const qcloud = require('../../vendor/wafer2-client-sdk/index');
 const config = require('../../config');
 
 Page({
-
-  /**
-   * Page initial data
-   */
   data: {
     product: {}
   },
 
-  /**
-   * Lifecycle function--Called when page load
-   */
   onLoad: function (options) {
     this.getProduct(options.id);
   },
@@ -28,6 +20,7 @@ Page({
       success: (res) => {
         wx.hideLoading();
         let data = res.data;
+        
         if (!data.code) {
           this.setData({
             product: data.data
@@ -41,7 +34,7 @@ Page({
       },
       fail: (res) => {
         wx.hideLoading();
-
+      
         setTimeout(() => {
           wx.navigateBack();
         }, 2000);
@@ -107,52 +100,20 @@ Page({
     });
   },
 
-  /**
-   * Lifecycle function--Called when page is initially rendered
-   */
-  onReady: function () {
-
+  onTapCommentEntry: function () {
+    let product = this.data.product;
+    if (product.commentCount) {
+      wx.navigateTo({
+        url: `/pages/comment/comment?id=${product.id}&price=${product.price}&name=${product.name}&image=${product.image}`
+      })
+    }
   },
 
-  /**
-   * Lifecycle function--Called when page show
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page hide
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page unload
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * Page event handler function--Called when user drop down
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * Called when page reach bottom
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * Called when user click on the top right corner to share
-   */
-  onShareAppMessage: function () {
-
-  }
+  onReady: function () {},
+  onShow: function () {},
+  onHide: function () {},
+  onUnload: function () {},
+  onPullDownRefresh: function () {},
+  onReachBottom: function () {},
+  onShareAppMessage: function () {}
 })

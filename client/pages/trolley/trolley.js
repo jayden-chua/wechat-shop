@@ -25,20 +25,35 @@ Page({
   },
 
   getTrolleyList: function () {
+    wx.showLoading({
+      title: '刷新购物车数据...',
+    });
+
     qcloud.request({
       url: config.service.listTrolley,
       method: 'GET',
       login: true,
       success: (res) => {
-        let trolleyList = res.data.data;
-        if (trolleyList.length > 0) {
+        wx.hideLoading();
+        let trolleyList = res.data;
+        
+        if (!trolleyList.code) {
           this.setData({
-            trolleyList: trolleyList
+            trolleyList: trolleyList.data
+          });
+        } else {
+          wx.showToast({
+            icon: 'none',
+            title: '数据刷新失败',
           });
         }
       },
       fail: () => {
-        console.log('failed');
+        wx.hideLoading();
+        wx.showToast({
+          icon: 'none',
+          title: '数据刷新失败',
+        });
       }
     });
   },
@@ -263,7 +278,6 @@ Page({
             title: '结算成功',
           });
           this.getTrolleyList();
-          wx.navigateTo({ url: '../order/order' });
         } else {
           wx.showToas({
             icon: 'none',
